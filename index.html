@@ -593,11 +593,6 @@
         <h3 style="font-size:18px; font-weight:800;">تنظیمات سیستم</h3>
         <button class="btn btn-secondary" style="padding:4px 10px;" onclick="closeModal('settingsModal')">✖</button>
       </div>
-      
-      <div class="form-group">
-        <label>مدل هوش مصنوعی (AI API Model):</label>
-        <input type="text" id="aiModelInput" class="form-control" placeholder="مثلاً: llama-3.3-70b-versatile">
-      </div>
 
       <div class="form-group">
         <label>زبان پیش‌فرض نمایش داستان:</label>
@@ -669,7 +664,7 @@
     const OMDB_KEY    = "4b0254f3";
     const AI_API_BASE = "https://openrouter.ai/api/v1";
     const AI_API_KEY  = "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";
-    let AI_MODEL      = localStorage.getItem("cinetrack_ai_model") || "google/gemma-4-31b-it:free";
+    const AI_MODEL    = "meta-llama/llama-3.1-8b-instruct:free"; // Hardcoded fast and free model
 
     // ==================== IndexedDB ====================
     const DB_NAME    = 'CineTrackDB';
@@ -1736,10 +1731,6 @@
     function saveGeneralNotes(v) { localStorage.setItem("cinetrack_general_notes", v); }
     function openSettingsModal() {
       document.getElementById("settingsModal").classList.add("active");
-      
-      const savedModel = localStorage.getItem("cinetrack_ai_model") || "meta-llama/llama-3.1-8b-instruct:free";
-      const modelInput = document.getElementById("aiModelInput");
-      if (modelInput) modelInput.value = savedModel;
 
       const savedUrl = localStorage.getItem("cinetrack_backup_archive_url") || "";
       const urlInput = document.getElementById("backupArchiveUrlInput");
@@ -1747,13 +1738,6 @@
     }
 
     function saveSettings() {
-      const modelInput = document.getElementById("aiModelInput");
-      if (modelInput) {
-        const newModel = modelInput.value.trim() || "meta-llama/llama-3.1-8b-instruct:free";
-        AI_MODEL = newModel;
-        localStorage.setItem("cinetrack_ai_model", newModel);
-      }
-
       const lang     = document.getElementById("uiLanguageSetting").value;
       state.uiLanguage = lang;
       localStorage.setItem("cinetrack_ui_lang", lang);
@@ -1761,7 +1745,7 @@
       const backupUrl = document.getElementById("backupArchiveUrlInput").value.trim();
       if (backupUrl) localStorage.setItem("cinetrack_backup_archive_url", backupUrl);
       else localStorage.removeItem("cinetrack_backup_archive_url");
-      
+
       showToast("✅ تنظیمات ذخیره شد.", 'success');
       closeModal('settingsModal');
       renderHero();
