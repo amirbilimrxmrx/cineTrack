@@ -745,6 +745,12 @@
     // Primary archive URL (auto-fetched via proxy)
     const PRIMARY_ARCHIVE_URL = "https://dls2.film2cinemaha.top/DonyayeSerial/donyaye_serial_all_archive.html";
 
+    // CORS Proxies in order of reliability
+    const CORS_PROXIES = [
+      "https://corsproxy.io/?url=",
+      "https://api.allorigins.win/raw?url="
+    ];
+
     // ==================== IndexedDB ====================
     const DB_NAME    = 'CineTrackDB';
     const DB_VERSION = 1;
@@ -846,7 +852,7 @@
       progressFill.style.width = '0%';
 
       if (archiveFetchInProgress) {
-        statusEl.innerHTML = '⏳ در حال بارگیری آرشیو...';
+        statusEl.innerHTML = '⏳ در حال بارگیری آرشیو... لطفاً شکیبا باشید.';
         statusEl.style.color = 'var(--text-secondary)';
         progressBarContainer.style.display = 'block';
         progressFill.style.width = '100%';
@@ -854,7 +860,7 @@
         downloadBtn.disabled = true;
         downloadBtn.textContent = 'در حال بارگیری...';
       } else if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
-        statusEl.innerHTML = '✅ آرشیو اصلی بارگذاری شده و آماده استفاده است.';
+        statusEl.innerHTML = `✅ آرشیو اصلی بارگذاری شد (${Math.round(state.archiveHtmlSource.length/1024)} KB).`;
         statusEl.style.color = 'var(--green)';
         progressBarContainer.style.display = 'none';
         downloadBtn.disabled = false;
@@ -868,46 +874,45 @@
       }
     }
 
-    // ==================== AUTO-FETCH PRIMARY ARCHIVE ====================
+    // ==================== ARCHIVE FETCH (with multiple proxies) ====================
     async function fetchPrimaryArchive() {
       if (archiveFetchInProgress) return;
       if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
-        // Already loaded
         updateArchiveStatusUI();
         return;
       }
       archiveFetchInProgress = true;
       updateArchiveStatusUI();
-      try {
-        // Use a CORS proxy (allorigins.win is reliable for static HTML)
-        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(PRIMARY_ARCHIVE_URL);
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const text = await response.text();
-        if (text && text.length > 1000) {
-          state.archiveHtmlSource = text;
-          await saveArchiveToDB(text);
-          showToast('✅ آرشیو اصلی با موفقیت بارگذاری شد.', 'success', 3000);
-          updateArchiveStatusUI();
-        } else {
-          throw new Error('Archive content too small or empty');
+      let success = false;
+      for (const proxy of CORS_PROXIES) {
+        try {
+          const proxyUrl = proxy + encodeURIComponent(PRIMARY_ARCHIVE_URL);
+          const response = await fetch(proxyUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const text = await response.text();
+          if (text && text.length > 1000) {
+            state.archiveHtmlSource = text;
+            await saveArchiveToDB(text);
+            showToast('✅ آرشیو اصلی با موفقیت بارگذاری شد.', 'success', 3000);
+            success = true;
+            break;
+          }
+        } catch (err) {
+          console.warn(`Proxy ${proxy} failed:`, err);
+          continue;
         }
-      } catch (err) {
-        console.error('Failed to fetch primary archive:', err);
-        showToast('⚠️ خطا در بارگیری آرشیو اصلی.', 'error', 4000);
-        // Reset state to not loaded
-        state.archiveHtmlSource = '';
-        updateArchiveStatusUI();
-      } finally {
-        archiveFetchInProgress = false;
-        updateArchiveStatusUI();
       }
+      if (!success) {
+        showToast('❌ بارگیری آرشیو ناموفق بود. می‌توانید بعداً دوباره تلاش کنید.', 'error', 5000);
+        state.archiveHtmlSource = '';
+      }
+      archiveFetchInProgress = false;
+      updateArchiveStatusUI();
     }
 
     // Manual trigger from settings button
     function manualFetchArchive() {
       if (archiveFetchInProgress) return;
-      // Reset if already loaded? We'll just refetch anyway (useful for retry)
       state.archiveHtmlSource = ''; // force refetch
       fetchPrimaryArchive();
     }
@@ -1870,7 +1875,6 @@
       if (langSelect) langSelect.value = state.uiLanguage;
       const themeCheckbox = document.getElementById("themeToggleCheckbox");
       if (themeCheckbox) themeCheckbox.checked = document.body.classList.contains('light');
-      // Update archive download status when opening settings
       updateArchiveStatusUI();
     }
 
@@ -1879,7 +1883,6 @@
       state.uiLanguage = lang;
       localStorage.setItem("cinetrack_ui_lang", lang);
 
-      // Theme is saved automatically by the toggle, but ensure it's synced
       const isLight = document.getElementById("themeToggleCheckbox").checked;
       applyTheme(isLight);
 
@@ -2240,7 +2243,7 @@ ${JSON.stringify(lib, null, 1)}
 
     // ==================== INIT ====================
     async function init() {
-      loadTheme(); // Apply saved theme (dark/light)
+      loadTheme();
 
       try {
         state.archiveHtmlSource = await loadArchiveFromDB();
