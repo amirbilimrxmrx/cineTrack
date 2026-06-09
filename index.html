@@ -26,7 +26,6 @@
       --blue: #60a5fa;
       --radius: 16px;
       --radius-sm: 12px;
-      /* light theme overrides (defaults are dark) */
     }
 
     /* Light theme class on body */
@@ -517,6 +516,17 @@
     input:checked + .slider { background-color: var(--accent); }
     input:checked + .slider:before { transform: translateX(24px); }
 
+    /* Indeterminate progress bar animation */
+    .progress-indeterminate {
+      background: linear-gradient(90deg, var(--cyan) 30%, rgba(34,211,238,0.2) 50%, var(--cyan) 70%);
+      background-size: 200% 100%;
+      animation: indeterminate-slide 1.5s linear infinite;
+    }
+    @keyframes indeterminate-slide {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
     @media (max-width: 768px) {
       .hero-content { flex-direction: column; align-items: center; }
       .controls-bar { flex-direction: column; align-items: stretch; }
@@ -638,7 +648,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (simplified: language + theme only) -->
+  <!-- SETTINGS MODAL (simplified: language + theme + archive download) -->
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -657,12 +667,26 @@
       <div class="form-group">
         <label>تم (رنگ‌بندی):</label>
         <div class="theme-toggle-wrapper">
-          <span style="font-size:14px; color:var(--text-secondary);">🌙 تاریک</span>
+          <span style="font-size:14px; color:var(--text-secondary);">☀️ روشن</span>
           <label class="theme-switch">
             <input type="checkbox" id="themeToggleCheckbox" onchange="toggleTheme(this.checked)">
             <span class="slider"></span>
           </label>
-          <span style="font-size:14px; color:var(--text-secondary);">☀️ روشن</span>
+          <span style="font-size:14px; color:var(--text-secondary);">🌙 تاریک</span>
+        </div>
+      </div>
+
+      <!-- Primary Archive Download Section -->
+      <div style="border-top:1px solid var(--glass-border); margin-top: 24px; padding-top: 18px;">
+        <p style="font-size:14px; color:var(--cyan); margin-bottom:14px; font-weight:bold;">📥 آرشیو اصلی</p>
+        <div class="form-group">
+          <div id="archiveDownloadStatus" style="margin-bottom: 12px; font-size: 13px; color: var(--text-secondary);">
+            در حال بررسی...
+          </div>
+          <div id="archiveProgressBar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: none;">
+            <div id="archiveProgressFill" style="height: 100%; background: var(--cyan); width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
+          </div>
+          <button class="btn btn-secondary" style="margin-top: 12px;" id="downloadArchiveBtn" onclick="manualFetchArchive()">بارگیری آرشیو اصلی</button>
         </div>
       </div>
 
@@ -786,6 +810,9 @@
     const searchQueryCache      = {};
     const SEARCH_CACHE_TTL      = 5 * 60 * 1000; // 5 min
 
+    // Archive fetch state
+    let archiveFetchInProgress = false;
+
     // ==================== THEME HANDLING ====================
     function applyTheme(isLight) {
       document.body.classList.toggle('light', isLight);
@@ -804,16 +831,56 @@
       if (checkbox) checkbox.checked = isLight;
     }
 
-    // ==================== AUTO-FETCH ARCHIVE ====================
+    // ==================== ARCHIVE DOWNLOAD UI HELPERS ====================
+    function updateArchiveStatusUI() {
+      const statusEl = document.getElementById('archiveDownloadStatus');
+      const progressBarContainer = document.getElementById('archiveProgressBar');
+      const progressFill = document.getElementById('archiveProgressFill');
+      const downloadBtn = document.getElementById('downloadArchiveBtn');
+
+      if (!statusEl || !progressBarContainer || !progressFill || !downloadBtn) return;
+
+      // Hide progress by default
+      progressBarContainer.style.display = 'none';
+      progressFill.className = '';
+      progressFill.style.width = '0%';
+
+      if (archiveFetchInProgress) {
+        statusEl.innerHTML = '⏳ در حال بارگیری آرشیو...';
+        statusEl.style.color = 'var(--text-secondary)';
+        progressBarContainer.style.display = 'block';
+        progressFill.style.width = '100%';
+        progressFill.classList.add('progress-indeterminate');
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = 'در حال بارگیری...';
+      } else if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
+        statusEl.innerHTML = '✅ آرشیو اصلی بارگذاری شده و آماده استفاده است.';
+        statusEl.style.color = 'var(--green)';
+        progressBarContainer.style.display = 'none';
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'بارگیری مجدد';
+      } else {
+        statusEl.innerHTML = '⚠️ آرشیو اصلی هنوز بارگذاری نشده است.';
+        statusEl.style.color = '#f59e0b';
+        progressBarContainer.style.display = 'none';
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'بارگیری آرشیو اصلی';
+      }
+    }
+
+    // ==================== AUTO-FETCH PRIMARY ARCHIVE ====================
     async function fetchPrimaryArchive() {
+      if (archiveFetchInProgress) return;
       if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
-        // Already loaded (from IndexedDB or previous session)
+        // Already loaded
+        updateArchiveStatusUI();
         return;
       }
+      archiveFetchInProgress = true;
+      updateArchiveStatusUI();
       try {
         // Use a CORS proxy (allorigins.win is reliable for static HTML)
         const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(PRIMARY_ARCHIVE_URL);
-        showToast('⏳ در حال بارگیری آرشیو اصلی...', 'info', 4000);
         const response = await fetch(proxyUrl);
         if (!response.ok) throw new Error('Network response was not ok');
         const text = await response.text();
@@ -821,11 +888,28 @@
           state.archiveHtmlSource = text;
           await saveArchiveToDB(text);
           showToast('✅ آرشیو اصلی با موفقیت بارگذاری شد.', 'success', 3000);
+          updateArchiveStatusUI();
+        } else {
+          throw new Error('Archive content too small or empty');
         }
       } catch (err) {
         console.error('Failed to fetch primary archive:', err);
-        showToast('⚠️ خطا در بارگیری آرشیو اصلی. همچنان می‌توانید از آرشیو پشتیبان استفاده کنید.', 'error', 4000);
+        showToast('⚠️ خطا در بارگیری آرشیو اصلی.', 'error', 4000);
+        // Reset state to not loaded
+        state.archiveHtmlSource = '';
+        updateArchiveStatusUI();
+      } finally {
+        archiveFetchInProgress = false;
+        updateArchiveStatusUI();
       }
+    }
+
+    // Manual trigger from settings button
+    function manualFetchArchive() {
+      if (archiveFetchInProgress) return;
+      // Reset if already loaded? We'll just refetch anyway (useful for retry)
+      state.archiveHtmlSource = ''; // force refetch
+      fetchPrimaryArchive();
     }
 
     // ==================== UTILS ====================
@@ -1369,7 +1453,7 @@
         return;
       }
       if (!state.archiveHtmlSource) {
-        resultsDiv.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid #f87171;padding:15px;border-radius:12px;font-size:14px;color:#ef4444;">⚠️ آرشیو اصلی هنوز بارگذاری نشده است. لطفاً صبر کنید یا از دکمه زیر استفاده کنید.</div>`;
+        resultsDiv.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid #f87171;padding:15px;border-radius:12px;font-size:14px;color:#ef4444;">⚠️ آرشیو اصلی هنوز بارگذاری نشده است. لطفاً از تنظیمات آن را بارگیری کنید.</div>`;
         return;
       }
 
@@ -1786,6 +1870,8 @@
       if (langSelect) langSelect.value = state.uiLanguage;
       const themeCheckbox = document.getElementById("themeToggleCheckbox");
       if (themeCheckbox) themeCheckbox.checked = document.body.classList.contains('light');
+      // Update archive download status when opening settings
+      updateArchiveStatusUI();
     }
 
     function saveSettings() {
