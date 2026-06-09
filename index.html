@@ -6,7 +6,6 @@
   <title>CineTrack AI — Ultimate Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ===== CSS VARIABLES (Dark Theme by default) ===== */
     :root {
       --bg-primary: #0d0f1a;
       --bg-secondary: #151829;
@@ -26,25 +25,6 @@
       --blue: #60a5fa;
       --radius: 16px;
       --radius-sm: 12px;
-    }
-
-    /* Light theme class on body */
-    body.light {
-      --bg-primary: #f8fafc;
-      --bg-secondary: #ffffff;
-      --surface: rgba(0,0,0,0.03);
-      --surface-hover: rgba(0,0,0,0.06);
-      --border: rgba(0,0,0,0.08);
-      --accent: #e11d48;
-      --accent-hover: #be123c;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --glass: rgba(0,0,0,0.02);
-      --glass-border: rgba(0,0,0,0.1);
-      --gradient-hero: linear-gradient(135deg, #e0e7ff, #f1f5f9);
-      --cyan: #0891b2;
-      --green: #059669;
-      --blue: #2563eb;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
@@ -68,17 +48,11 @@
       border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between;
       align-items: center; position: sticky; top: 0; z-index: 100; gap: 20px; flex-wrap: wrap;
     }
-    body.light header { background: rgba(255,255,255,0.85); }
 
     .brand {
       font-size: 26px; font-weight: 900; color: var(--accent); display: flex; align-items: center; gap: 8px;
       background: linear-gradient(135deg, #ff4d6a, #ff8fa3); -webkit-background-clip: text;
       -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    body.light .brand {
-      background: linear-gradient(135deg, #e11d48, #f43f5e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     .search-container { position: relative; width: 38%; max-width: 480px; min-width: 260px; }
@@ -87,8 +61,6 @@
       display: flex; align-items: center; background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border);
       border-radius: 14px; padding: 2px 16px; backdrop-filter: blur(8px);
     }
-    body.light .search-wrapper { background: rgba(0,0,0,0.04); }
-
     .search-wrapper input {
       flex: 1; background: transparent; border: none; color: var(--text-primary); padding: 12px 0;
       font-size: 14px; outline: none;
@@ -109,7 +81,6 @@
       display: flex; gap: 16px; padding: 14px; border-bottom: 1px solid var(--border); cursor: pointer; align-items: center;
     }
     .search-item:hover { background: rgba(255,255,255,0.05); }
-    body.light .search-item:hover { background: rgba(0,0,0,0.05); }
     .search-item img { width: 45px; height: 65px; object-fit: cover; border-radius: 8px; background: #1e1e2f; }
     .search-item .info h4 { font-size: 14px; margin-bottom: 4px; color: var(--text-primary); font-weight: 700; }
     .search-item .info p { font-size: 12px; color: var(--text-secondary); }
@@ -155,7 +126,6 @@
 
     .hero-details { flex: 1; }
     .hero-title { font-size: 32px; font-weight: 900; margin-bottom: 14px; color: white; letter-spacing: -0.5px; }
-    body.light .hero-title { color: #0f172a; }
     .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; font-size: 13px; }
 
     .badge {
@@ -171,7 +141,6 @@
     .extended-row { font-size: 13px; line-height: 1.6; color: var(--text-primary); }
     .extended-row strong { color: var(--text-secondary); font-weight: 600; display: inline-block; width: 120px; }
     .hero-plot { font-size: 15px; line-height: 1.9; color: #d0d4e0; margin-bottom: 28px; }
-    body.light .hero-plot { color: #334155; }
 
     .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; border-top: 1px solid var(--glass-border); padding-top: 24px; }
 
@@ -497,36 +466,6 @@
     .ai-confirm-btns { display: flex; gap: 8px; }
     .ai-confirm-btns .btn { padding: 6px 14px; font-size: 12px; }
 
-    /* Theme toggle switch */
-    .theme-toggle-wrapper {
-      display: flex; align-items: center; gap: 12px; margin-top: 8px;
-    }
-    .theme-switch {
-      position: relative; display: inline-block; width: 52px; height: 28px;
-    }
-    .theme-switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155; transition: .4s; border-radius: 34px;
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
-      background-color: white; transition: .4s; border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(24px); }
-
-    /* Indeterminate progress bar animation */
-    .progress-indeterminate {
-      background: linear-gradient(90deg, var(--cyan) 30%, rgba(34,211,238,0.2) 50%, var(--cyan) 70%);
-      background-size: 200% 100%;
-      animation: indeterminate-slide 1.5s linear infinite;
-    }
-    @keyframes indeterminate-slide {
-      0% { background-position: 100% 0; }
-      100% { background-position: -100% 0; }
-    }
-
     @media (max-width: 768px) {
       .hero-content { flex-direction: column; align-items: center; }
       .controls-bar { flex-direction: column; align-items: stretch; }
@@ -648,7 +587,6 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (simplified: language + theme + archive download) -->
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -657,42 +595,33 @@
       </div>
       
       <div class="form-group">
+        <label>مدل هوش مصنوعی (AI API Model):</label>
+        <input type="text" id="aiModelInput" class="form-control" placeholder="مثلاً: llama-3.3-70b-versatile">
+      </div>
+
+      <div class="form-group">
         <label>زبان پیش‌فرض نمایش داستان:</label>
         <select id="uiLanguageSetting" class="form-control">
           <option value="en">English</option>
           <option value="fa">فارسی (ترجمه AI)</option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label>تم (رنگ‌بندی):</label>
-        <div class="theme-toggle-wrapper">
-          <span style="font-size:14px; color:var(--text-secondary);">☀️ روشن</span>
-          <label class="theme-switch">
-            <input type="checkbox" id="themeToggleCheckbox" onchange="toggleTheme(this.checked)">
-            <span class="slider"></span>
-          </label>
-          <span style="font-size:14px; color:var(--text-secondary);">🌙 تاریک</span>
-        </div>
-      </div>
-
-      <!-- Primary Archive Download Section -->
-      <div style="border-top:1px solid var(--glass-border); margin-top: 24px; padding-top: 18px;">
-        <p style="font-size:14px; color:var(--cyan); margin-bottom:14px; font-weight:bold;">📥 آرشیو اصلی</p>
+      <div style="border-top: 1px solid var(--glass-border); margin: 24px 0 16px; padding-top: 18px;">
+        <p style="font-size: 14px; color: var(--cyan); margin-bottom: 14px; font-weight:bold;">📥 بارگذاری فایل آرشیو</p>
         <div class="form-group">
-          <div id="archiveDownloadStatus" style="margin-bottom: 12px; font-size: 13px; color: var(--text-secondary);">
-            در حال بررسی...
-          </div>
-          <div id="archiveProgressBar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: none;">
-            <div id="archiveProgressFill" style="height: 100%; background: var(--cyan); width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
-          </div>
-          <div style="display: flex; gap: 8px; margin-top: 12px;">
-            <button class="btn btn-secondary" style="flex:1;" id="downloadArchiveBtn" onclick="manualFetchArchive()">بارگیری آرشیو اصلی</button>
-            <button class="btn btn-secondary" style="flex:1; display:none;" id="openArchiveFallbackBtn" onclick="window.open(PRIMARY_ARCHIVE_URL, '_blank')">باز کردن در مرورگر</button>
-          </div>
+          <label>فایل HTML آرشیو:</label>
+          <input type="file" id="archiveHtmlFileInput" class="form-control" accept=".html,.htm" onchange="handleArchiveHtmlUpload(event)">
+          <div id="archiveUploadStatus" style="font-size:12px; color:#fbbf24; margin-top:10px;"></div>
         </div>
       </div>
-
+      <div style="border-top: 1px solid var(--glass-border); margin: 24px 0 16px; padding-top: 18px;">
+        <p style="font-size: 14px; color: var(--cyan); margin-bottom: 14px; font-weight:bold;">🔗 آرشیو پشتیبان (لینک)</p>
+        <div class="form-group">
+          <label>لینک وب‌سایت پشتیبان (در صورت عدم یافت لینک در فایل آپلودی)</label>
+          <input type="url" id="backupArchiveUrlInput" class="form-control" placeholder="https://example.com/archive">
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">اگر لینکی در فایل HTML یافت نشد، دکمه "باز کردن آرشیو پشتیبان" نمایش داده می‌شود.</div>
+        </div>
+      </div>
       <button class="btn" style="width:100%; margin-top:10px;" onclick="saveSettings()">ذخیره تنظیمات</button>
     </div>
   </div>
@@ -736,24 +665,12 @@
   </div>
 
   <script>
-    // ==================== API CONFIGURATION (LOCKED) ====================
+    // ==================== API CONFIGURATION ====================
     const OMDB_KEY    = "4b0254f3";
     const AI_API_BASE = "https://openrouter.ai/api/v1";
     const AI_API_KEY  = "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";
-    const AI_MODEL    = "google/gemma-4-31b-it:free";  // locked, not changeable
-
-    // Hardcoded backup archive link
-    const BACKUP_ARCHIVE_URL = "https://www.my-f2m.top";
-
-    // Primary archive URL (auto-fetched via proxy)
-    const PRIMARY_ARCHIVE_URL = "https://dls2.film2cinemaha.top/DonyayeSerial/donyaye_serial_all_archive.html";
-
-    // CORS Proxies – ordered by reliability for large files
-    const CORS_PROXIES = [
-      "https://api.codetabs.com/v1/proxy?quest=",
-      "https://corsproxy.io/?url=",
-      "https://api.allorigins.win/raw?url="
-    ];
+    const AI_MODEL_DEFAULT = "google/gemma-4-31b-it:free";
+    let AI_MODEL      = localStorage.getItem("cinetrack_ai_model") || AI_MODEL_DEFAULT;
 
     // ==================== IndexedDB ====================
     const DB_NAME    = 'CineTrackDB';
@@ -820,131 +737,6 @@
     const searchQueryCache      = {};
     const SEARCH_CACHE_TTL      = 5 * 60 * 1000; // 5 min
 
-    // Archive fetch state
-    let archiveFetchInProgress = false;
-
-    // ==================== THEME HANDLING ====================
-    function applyTheme(isLight) {
-      document.body.classList.toggle('light', isLight);
-      localStorage.setItem('cinetrack_theme', isLight ? 'light' : 'dark');
-    }
-
-    function toggleTheme(checked) {
-      applyTheme(checked);
-    }
-
-    function loadTheme() {
-      const saved = localStorage.getItem('cinetrack_theme');
-      const isLight = saved === 'light';
-      applyTheme(isLight);
-      const checkbox = document.getElementById('themeToggleCheckbox');
-      if (checkbox) checkbox.checked = isLight;
-    }
-
-    // ==================== ARCHIVE DOWNLOAD UI HELPERS ====================
-    function updateArchiveStatusUI() {
-      const statusEl = document.getElementById('archiveDownloadStatus');
-      const progressBarContainer = document.getElementById('archiveProgressBar');
-      const progressFill = document.getElementById('archiveProgressFill');
-      const downloadBtn = document.getElementById('downloadArchiveBtn');
-      const fallbackBtn = document.getElementById('openArchiveFallbackBtn');
-
-      if (!statusEl || !progressBarContainer || !progressFill || !downloadBtn || !fallbackBtn) return;
-
-      // Hide progress by default
-      progressBarContainer.style.display = 'none';
-      progressFill.className = '';
-      progressFill.style.width = '0%';
-      fallbackBtn.style.display = 'none';
-
-      if (archiveFetchInProgress) {
-        statusEl.innerHTML = '⏳ در حال بارگیری آرشیو... لطفاً شکیبا باشید.';
-        statusEl.style.color = 'var(--text-secondary)';
-        progressBarContainer.style.display = 'block';
-        progressFill.style.width = '100%';
-        progressFill.classList.add('progress-indeterminate');
-        downloadBtn.disabled = true;
-        downloadBtn.textContent = 'در حال بارگیری...';
-      } else if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
-        statusEl.innerHTML = `✅ آرشیو اصلی بارگذاری شد (${Math.round(state.archiveHtmlSource.length/1024)} KB).`;
-        statusEl.style.color = 'var(--green)';
-        progressBarContainer.style.display = 'none';
-        downloadBtn.disabled = false;
-        downloadBtn.textContent = 'بارگیری مجدد';
-      } else {
-        statusEl.innerHTML = '⚠️ آرشیو اصلی هنوز بارگذاری نشده است.';
-        statusEl.style.color = '#f59e0b';
-        progressBarContainer.style.display = 'none';
-        downloadBtn.disabled = false;
-        downloadBtn.textContent = 'بارگیری آرشیو اصلی';
-        fallbackBtn.style.display = 'inline-block'; // show fallback button when not loaded
-      }
-    }
-
-    // ==================== ARCHIVE FETCH (robust with detailed errors) ====================
-    async function fetchPrimaryArchive() {
-      if (archiveFetchInProgress) return;
-      if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
-        updateArchiveStatusUI();
-        return;
-      }
-      archiveFetchInProgress = true;
-      updateArchiveStatusUI();
-      let lastError = '';
-      let success = false;
-      for (let i = 0; i < CORS_PROXIES.length; i++) {
-        const proxy = CORS_PROXIES[i];
-        try {
-          const statusEl = document.getElementById('archiveDownloadStatus');
-          if (statusEl) {
-            statusEl.innerHTML = `⏳ تلاش با پراکسی ${i+1}...`;
-          }
-          const proxyUrl = proxy + encodeURIComponent(PRIMARY_ARCHIVE_URL);
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 sec timeout
-          const response = await fetch(proxyUrl, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status} ${response.statusText}`);
-          }
-          const text = await response.text();
-          if (text && text.length > 1000) {
-            state.archiveHtmlSource = text;
-            await saveArchiveToDB(text);
-            showToast('✅ آرشیو اصلی با موفقیت بارگذاری شد.', 'success', 3000);
-            success = true;
-            break;
-          } else {
-            throw new Error('محتوای دریافت شده خیلی کوچک است');
-          }
-        } catch (err) {
-          console.warn(`Proxy ${proxy} failed:`, err.message);
-          lastError = err.message;
-          continue;
-        }
-      }
-      if (!success) {
-        const msg = lastError ? `❌ خطا: ${lastError}` : '❌ بارگیری ناموفق بود.';
-        showToast(msg, 'error', 6000);
-        state.archiveHtmlSource = '';
-        // Show error details in status
-        const statusEl = document.getElementById('archiveDownloadStatus');
-        if (statusEl) {
-          statusEl.innerHTML = msg + '<br><small>می‌توانید فایل را مستقیماً باز کنید.</small>';
-          statusEl.style.color = '#ef4444';
-        }
-      }
-      archiveFetchInProgress = false;
-      updateArchiveStatusUI();
-    }
-
-    // Manual trigger from settings button
-    function manualFetchArchive() {
-      if (archiveFetchInProgress) return;
-      state.archiveHtmlSource = ''; // force refetch
-      fetchPrimaryArchive();
-    }
-
     // ==================== UTILS ====================
     function sanitizeAIResponse(text) {
       if (!text) return "";
@@ -988,6 +780,9 @@
     async function callAIAPIWithMessages(messages, temperature = 0.7) {
       const key     = AI_API_KEY.trim();
       const baseUrl = AI_API_BASE.replace(/\/+$/, "");
+      if (!key || key === "your-openrouter-api-key-here") {
+        throw new Error("⚠️ لطفاً کلید API را در متغیر AI_API_KEY تنظیم کنید.");
+      }
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
@@ -1437,6 +1232,44 @@
         </div>`;
     }
 
+    // ==================== ARCHIVE UPLOAD ====================
+    async function handleArchiveHtmlUpload(event) {
+      const file     = event.target.files[0];
+      const statusEl = document.getElementById("archiveUploadStatus");
+      if (!file) return;
+
+      statusEl.style.color = '#fbbf24';
+      statusEl.textContent = "⏳ در حال خواندن فایل...";
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const content = e.target.result;
+        if (!content || content.trim().length === 0) {
+          statusEl.style.color = '#ef4444';
+          statusEl.textContent = "❌ فایل خالی است.";
+          return;
+        }
+        state.archiveHtmlSource = content;
+        statusEl.style.color   = '#fbbf24';
+        statusEl.textContent   = "⏳ در حال ذخیره‌سازی در IndexedDB...";
+        try {
+          await saveArchiveToDB(content);
+          statusEl.style.color = '#10b981';
+          statusEl.textContent = `✅ فایل آرشیو با موفقیت بارگذاری شد (${Math.round(content.length / 1024)} KB).`;
+          showToast("✅ فایل آرشیو بارگذاری شد!", 'success');
+        } catch (err) {
+          console.error("Archive save error:", err);
+          statusEl.style.color = '#f59e0b';
+          statusEl.textContent = "⚠️ فایل در حافظه موقت بارگذاری شد (خطا در ذخیره دائم).";
+        }
+      };
+      reader.onerror = function() {
+        statusEl.style.color = '#ef4444';
+        statusEl.textContent = "❌ خطا در خواندن فایل.";
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
     // ==================== ARCHIVE LINK SEARCH ====================
     function getAllArchiveLinks() {
       if (!state.archiveHtmlSource) return [];
@@ -1476,6 +1309,7 @@
       });
     }
 
+    // NOTE: The AI step (stage 4) has been completely removed.
     async function matchAndExtractLinks(imdbID) {
       const item       = state.items.find(i => i.id === imdbID);
       const resultsDiv = document.getElementById("archiveMatchResults");
@@ -1486,7 +1320,7 @@
         return;
       }
       if (!state.archiveHtmlSource) {
-        resultsDiv.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid #f87171;padding:15px;border-radius:12px;font-size:14px;color:#ef4444;">⚠️ آرشیو اصلی هنوز بارگذاری نشده است. لطفاً از تنظیمات آن را بارگیری کنید.</div>`;
+        resultsDiv.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid #f87171;padding:15px;border-radius:12px;font-size:14px;color:#ef4444;">⚠️ فایل آرشیو بارگذاری نشده است. در تنظیمات فایل HTML آرشیو را آپلود کنید.</div>`;
         return;
       }
 
@@ -1512,13 +1346,18 @@
       matches = searchByTitleOnly(allLinks, item.title);
       if (matches.length) return renderExtractedLinks(matches, item, resultsDiv, `🔤 یافت‌شده با نام: <b>${item.title}</b>`);
 
-      // No matches in primary archive – show fallback button with hardcoded backup URL
-      resultsDiv.innerHTML = `
-        <div style="background:rgba(245,158,11,0.08);border:1px solid #f59e0b;padding:18px;border-radius:16px;text-align:center;">
-          <div style="font-size:16px;margin-bottom:12px;">⚠️ هیچ لینکی برای <b>${item.title}</b> در آرشیو اصلی یافت نشد.</div>
-          <div style="margin-bottom:16px;color:var(--text-secondary);">آیا می‌خواهید آرشیو پشتیبان را باز کنید؟</div>
-          <button class="btn btn-stream" onclick="window.open('${BACKUP_ARCHIVE_URL}', '_blank')">🔗 باز کردن آرشیو پشتیبان</button>
-        </div>`;
+      // No AI step here anymore – directly show "no links" + optional backup archive button
+      const backupUrl = localStorage.getItem("cinetrack_backup_archive_url");
+      if (backupUrl && backupUrl.trim().length > 5) {
+        resultsDiv.innerHTML = `
+          <div style="background:rgba(245,158,11,0.08);border:1px solid #f59e0b;padding:18px;border-radius:16px;text-align:center;">
+            <div style="font-size:16px;margin-bottom:12px;">⚠️ هیچ لینکی برای <b>${item.title}</b> در فایل آپلودی یافت نشد.</div>
+            <div style="margin-bottom:16px;color:var(--text-secondary);">آیا می‌خواهید آرشیو پشتیبان را باز کنید؟</div>
+            <button class="btn btn-stream" onclick="window.open('${backupUrl.replace(/'/g, "\\'")}', '_blank')">🔗 باز کردن آرشیو پشتیبان</button>
+          </div>`;
+      } else {
+        resultsDiv.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid #f87171;padding:15px;border-radius:12px;font-size:14px;color:#ef4444;">⚠️ هیچ لینکی برای <b>${item.title}</b> یافت نشد. (لینک پشتیبان در تنظیمات ثبت نشده)</div>`;
+      }
     }
 
     function tick() { return new Promise(r => setTimeout(r, 0)); }
@@ -1896,24 +1735,34 @@
 
     function openNotesModal()    { document.getElementById("notesModal").classList.add("active"); }
     function saveGeneralNotes(v) { localStorage.setItem("cinetrack_general_notes", v); }
-
     function openSettingsModal() {
       document.getElementById("settingsModal").classList.add("active");
-      const langSelect = document.getElementById("uiLanguageSetting");
-      if (langSelect) langSelect.value = state.uiLanguage;
-      const themeCheckbox = document.getElementById("themeToggleCheckbox");
-      if (themeCheckbox) themeCheckbox.checked = document.body.classList.contains('light');
-      updateArchiveStatusUI();
+      
+      const savedModel = localStorage.getItem("cinetrack_ai_model") || AI_MODEL_DEFAULT;
+      const modelInput = document.getElementById("aiModelInput");
+      if (modelInput) modelInput.value = savedModel;
+
+      const savedUrl = localStorage.getItem("cinetrack_backup_archive_url") || "";
+      const urlInput = document.getElementById("backupArchiveUrlInput");
+      if (urlInput) urlInput.value = savedUrl;
     }
 
     function saveSettings() {
+      const modelInput = document.getElementById("aiModelInput");
+      if (modelInput) {
+        const newModel = modelInput.value.trim() || AI_MODEL_DEFAULT;
+        AI_MODEL = newModel;
+        localStorage.setItem("cinetrack_ai_model", newModel);
+      }
+
       const lang     = document.getElementById("uiLanguageSetting").value;
       state.uiLanguage = lang;
       localStorage.setItem("cinetrack_ui_lang", lang);
 
-      const isLight = document.getElementById("themeToggleCheckbox").checked;
-      applyTheme(isLight);
-
+      const backupUrl = document.getElementById("backupArchiveUrlInput").value.trim();
+      if (backupUrl) localStorage.setItem("cinetrack_backup_archive_url", backupUrl);
+      else localStorage.removeItem("cinetrack_backup_archive_url");
+      
       showToast("✅ تنظیمات ذخیره شد.", 'success');
       closeModal('settingsModal');
       renderHero();
@@ -2271,17 +2120,12 @@ ${JSON.stringify(lib, null, 1)}
 
     // ==================== INIT ====================
     async function init() {
-      loadTheme();
-
       try {
         state.archiveHtmlSource = await loadArchiveFromDB();
       } catch (e) {
         console.warn("Archive load from DB failed:", e);
         state.archiveHtmlSource = "";
       }
-
-      // Auto-fetch primary archive if not already present
-      fetchPrimaryArchive();
 
       renderDashboard();
       extractAndRenderGenres();
@@ -2293,6 +2137,14 @@ ${JSON.stringify(lib, null, 1)}
 
       const langSelect = document.getElementById("uiLanguageSetting");
       if (langSelect) langSelect.value = state.uiLanguage;
+
+      if (state.archiveHtmlSource) {
+        const statusEl = document.getElementById("archiveUploadStatus");
+        if (statusEl) {
+          statusEl.style.color = '#10b981';
+          statusEl.textContent = `✅ فایل آرشیو بارگذاری شده (${Math.round(state.archiveHtmlSource.length / 1024)} KB).`;
+        }
+      }
 
       const notesEl = document.getElementById("generalNotesTextArea");
       if (notesEl) notesEl.value = localStorage.getItem("cinetrack_general_notes") || "";
