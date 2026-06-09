@@ -686,7 +686,10 @@
           <div id="archiveProgressBar" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: none;">
             <div id="archiveProgressFill" style="height: 100%; background: var(--cyan); width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
           </div>
-          <button class="btn btn-secondary" style="margin-top: 12px;" id="downloadArchiveBtn" onclick="manualFetchArchive()">بارگیری آرشیو اصلی</button>
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="btn btn-secondary" style="flex:1;" id="downloadArchiveBtn" onclick="manualFetchArchive()">بارگیری آرشیو اصلی</button>
+            <button class="btn btn-secondary" style="flex:1; display:none;" id="openArchiveFallbackBtn" onclick="window.open(PRIMARY_ARCHIVE_URL, '_blank')">باز کردن در مرورگر</button>
+          </div>
         </div>
       </div>
 
@@ -745,8 +748,9 @@
     // Primary archive URL (auto-fetched via proxy)
     const PRIMARY_ARCHIVE_URL = "https://dls2.film2cinemaha.top/DonyayeSerial/donyaye_serial_all_archive.html";
 
-    // CORS Proxies in order of reliability
+    // CORS Proxies – ordered by reliability for large files
     const CORS_PROXIES = [
+      "https://api.codetabs.com/v1/proxy?quest=",
       "https://corsproxy.io/?url=",
       "https://api.allorigins.win/raw?url="
     ];
@@ -843,13 +847,15 @@
       const progressBarContainer = document.getElementById('archiveProgressBar');
       const progressFill = document.getElementById('archiveProgressFill');
       const downloadBtn = document.getElementById('downloadArchiveBtn');
+      const fallbackBtn = document.getElementById('openArchiveFallbackBtn');
 
-      if (!statusEl || !progressBarContainer || !progressFill || !downloadBtn) return;
+      if (!statusEl || !progressBarContainer || !progressFill || !downloadBtn || !fallbackBtn) return;
 
       // Hide progress by default
       progressBarContainer.style.display = 'none';
       progressFill.className = '';
       progressFill.style.width = '0%';
+      fallbackBtn.style.display = 'none';
 
       if (archiveFetchInProgress) {
         statusEl.innerHTML = '⏳ در حال بارگیری آرشیو... لطفاً شکیبا باشید.';
@@ -871,10 +877,11 @@
         progressBarContainer.style.display = 'none';
         downloadBtn.disabled = false;
         downloadBtn.textContent = 'بارگیری آرشیو اصلی';
+        fallbackBtn.style.display = 'inline-block'; // show fallback button when not loaded
       }
     }
 
-    // ==================== ARCHIVE FETCH (with multiple proxies) ====================
+    // ==================== ARCHIVE FETCH (robust with detailed errors) ====================
     async function fetchPrimaryArchive() {
       if (archiveFetchInProgress) return;
       if (state.archiveHtmlSource && state.archiveHtmlSource.length > 500) {
@@ -883,12 +890,23 @@
       }
       archiveFetchInProgress = true;
       updateArchiveStatusUI();
+      let lastError = '';
       let success = false;
-      for (const proxy of CORS_PROXIES) {
+      for (let i = 0; i < CORS_PROXIES.length; i++) {
+        const proxy = CORS_PROXIES[i];
         try {
+          const statusEl = document.getElementById('archiveDownloadStatus');
+          if (statusEl) {
+            statusEl.innerHTML = `⏳ تلاش با پراکسی ${i+1}...`;
+          }
           const proxyUrl = proxy + encodeURIComponent(PRIMARY_ARCHIVE_URL);
-          const response = await fetch(proxyUrl);
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 sec timeout
+          const response = await fetch(proxyUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          }
           const text = await response.text();
           if (text && text.length > 1000) {
             state.archiveHtmlSource = text;
@@ -896,15 +914,25 @@
             showToast('✅ آرشیو اصلی با موفقیت بارگذاری شد.', 'success', 3000);
             success = true;
             break;
+          } else {
+            throw new Error('محتوای دریافت شده خیلی کوچک است');
           }
         } catch (err) {
-          console.warn(`Proxy ${proxy} failed:`, err);
+          console.warn(`Proxy ${proxy} failed:`, err.message);
+          lastError = err.message;
           continue;
         }
       }
       if (!success) {
-        showToast('❌ بارگیری آرشیو ناموفق بود. می‌توانید بعداً دوباره تلاش کنید.', 'error', 5000);
+        const msg = lastError ? `❌ خطا: ${lastError}` : '❌ بارگیری ناموفق بود.';
+        showToast(msg, 'error', 6000);
         state.archiveHtmlSource = '';
+        // Show error details in status
+        const statusEl = document.getElementById('archiveDownloadStatus');
+        if (statusEl) {
+          statusEl.innerHTML = msg + '<br><small>می‌توانید فایل را مستقیماً باز کنید.</small>';
+          statusEl.style.color = '#ef4444';
+        }
       }
       archiveFetchInProgress = false;
       updateArchiveStatusUI();
