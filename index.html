@@ -22,8 +22,10 @@
       --text-primary:   #EDF0FC;
       --text-secondary: #7B84A8;
       --text-muted:     #4E5474;
-      --glass:          rgba(255,255,255,0.04);
-      --glass-border:   rgba(255,255,255,0.09);
+      --glass:          rgba(255,255,255,0.08);
+      --glass-border:   rgba(255,255,255,0.22);
+      --glass-highlight: rgba(255,255,255,0.28);
+      --glass-specular:  rgba(255,255,255,0.18);
       --shadow-sm:      0 2px 10px rgba(0,0,0,0.4);
       --shadow:         0 6px 24px rgba(0,0,0,0.5);
       --shadow-lg:      0 16px 48px rgba(0,0,0,0.7);
@@ -55,8 +57,10 @@
       --text-primary:   #111230;
       --text-secondary: #505580;
       --text-muted:     #8890B0;
-      --glass:          rgba(255,255,255,0.65);
-      --glass-border:   rgba(0,0,0,0.07);
+      --glass:          rgba(255,255,255,0.62);
+      --glass-border:   rgba(255,255,255,0.85);
+      --glass-highlight: rgba(255,255,255,0.9);
+      --glass-specular:  rgba(255,255,255,0.75);
       --shadow-sm:      0 2px 10px rgba(0,0,0,0.06);
       --shadow:         0 6px 24px rgba(0,0,0,0.09);
       --shadow-lg:      0 16px 48px rgba(0,0,0,0.14);
@@ -117,20 +121,45 @@
 
     .glass {
       background: var(--glass);
-      backdrop-filter: blur(18px) saturate(1.8);
-      -webkit-backdrop-filter: blur(18px) saturate(1.8);
+      backdrop-filter: blur(48px) saturate(2.4) brightness(1.1) contrast(1.04);
+      -webkit-backdrop-filter: blur(48px) saturate(2.4) brightness(1.1) contrast(1.04);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius);
+      box-shadow:
+        inset 0 1.5px 0 0 var(--glass-highlight),
+        inset 0 -1px 0 0 rgba(255,255,255,0.04),
+        inset 1px 0 0 0 rgba(255,255,255,0.06),
+        0 8px 40px rgba(0,0,0,0.28),
+        0 1px 2px rgba(0,0,0,0.15);
+      position: relative;
+      isolation: isolate;
     }
+    /* Liquid glass iridescent sheen overlay */
+    .glass::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.14) 0%,
+        rgba(255,255,255,0.04) 40%,
+        rgba(255,255,255,0.0)  60%,
+        rgba(200,210,255,0.06) 100%);
+      pointer-events: none; z-index: 0;
+    }
+    .glass > * { position: relative; z-index: 1; }
 
     /* ============================================================
        HEADER
     ============================================================ */
     header {
-      background: var(--header-bg);
-      backdrop-filter: blur(24px) saturate(1.6);
-      -webkit-backdrop-filter: blur(24px) saturate(1.6);
-      border-bottom: 1px solid var(--border);
+      background: rgba(8,9,26,0.55);
+      backdrop-filter: blur(56px) saturate(2.6) brightness(1.12) contrast(1.06);
+      -webkit-backdrop-filter: blur(56px) saturate(2.6) brightness(1.12) contrast(1.06);
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        0 4px 40px rgba(0,0,0,0.4),
+        0 1px 0 rgba(255,255,255,0.06);
       padding: 14px 28px;
       display: flex;
       justify-content: space-between;
@@ -138,6 +167,14 @@
       position: sticky;
       top: 0; z-index: 100;
       gap: 16px; flex-wrap: wrap;
+    }
+    body.light-theme header {
+      background: rgba(241,243,252,0.55);
+      border-bottom-color: rgba(255,255,255,0.8);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.95),
+        0 4px 40px rgba(0,0,0,0.08),
+        0 1px 0 rgba(255,255,255,0.6);
     }
 
     .brand {
@@ -166,18 +203,32 @@
 
     .search-wrapper {
       display: flex; align-items: center;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 12px;
       padding: 2px 14px;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(40px) saturate(2.2) brightness(1.1);
+      -webkit-backdrop-filter: blur(40px) saturate(2.2) brightness(1.1);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.24),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 4px 20px rgba(0,0,0,0.2);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .search-wrapper:focus-within {
-      border-color: rgba(232,64,90,0.4);
-      box-shadow: 0 0 0 3px rgba(232,64,90,0.08);
+      border-color: rgba(232,64,90,0.55);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.24),
+        0 0 0 3px rgba(232,64,90,0.12),
+        0 4px 20px rgba(0,0,0,0.25);
     }
-    body.light-theme .search-wrapper { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.09); }
+    body.light-theme .search-wrapper {
+      background: rgba(255,255,255,0.6);
+      border-color: rgba(255,255,255,0.85);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.95),
+        0 4px 20px rgba(0,0,0,0.06);
+    }
     .search-wrapper input {
       flex: 1; background: transparent; border: none; color: var(--text-primary);
       padding: 11px 0; font-size: 14px; outline: none;
@@ -193,16 +244,31 @@
 
     .search-dropdown {
       position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-      background: var(--bg-secondary);
-      border: 1px solid var(--glass-border);
+      /* Opaque-enough base so content behind is fully hidden, blur adds the "frosted" quality */
+      background: rgba(10, 13, 32, 0.90);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: var(--radius);
       max-height: 420px; overflow: hidden;
       z-index: 200;
-      box-shadow: var(--shadow-lg);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.26),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 24px 64px rgba(0,0,0,0.7),
+        0 4px 16px rgba(0,0,0,0.4);
       display: none;
-      backdrop-filter: blur(24px) saturate(1.6);
-      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      /* Strong blur creates the frosted glass diffusion; even at 90% opacity it still blurs
+         the 10% of background that shows through, giving genuine depth */
+      backdrop-filter: blur(60px) saturate(2.8) brightness(1.14) contrast(1.06);
+      -webkit-backdrop-filter: blur(60px) saturate(2.8) brightness(1.14) contrast(1.06);
       flex-direction: column;
+    }
+    body.light-theme .search-dropdown {
+      background: rgba(240, 243, 252, 0.92);
+      border-color: rgba(255,255,255,0.95);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,1),
+        0 24px 64px rgba(0,0,0,0.12),
+        0 4px 16px rgba(0,0,0,0.06);
     }
     .search-dropdown.visible { display: flex; }
 
@@ -210,9 +276,11 @@
     .search-view-bar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 12px 8px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.04);
       flex-shrink: 0;
     }
+    body.light-theme .search-view-bar { border-bottom-color: rgba(0,0,0,0.08); background: rgba(0,0,0,0.02); }
     .search-count-label { font-size: 11px; color: var(--text-muted); }
     .search-view-btns { display: flex; gap: 4px; }
     .search-view-btn {
@@ -233,29 +301,35 @@
     /* List view items */
     .search-item {
       display: flex; gap: 12px; padding: 10px 14px;
-      border-bottom: 1px solid var(--border); cursor: pointer; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.07); cursor: pointer; align-items: center;
+      background: transparent;
     }
-    .search-item:hover { background: var(--surface-hover); }
-    .search-item img { width: 38px; height: 55px; object-fit: cover; border-radius: 6px; background: var(--bg-tertiary); flex-shrink: 0; }
+    .search-item:hover { background: rgba(255,255,255,0.06); }
+    body.light-theme .search-item { border-bottom-color: rgba(0,0,0,0.06); }
+    body.light-theme .search-item:hover { background: rgba(0,0,0,0.04); }
+    .search-item img { width: 38px; height: 55px; object-fit: cover; border-radius: 6px; background: rgba(255,255,255,0.06); flex-shrink: 0; }
     .search-item .info h4 { font-size: 13px; margin-bottom: 3px; color: var(--text-primary); font-weight: 700; }
     .search-item .info p { font-size: 11px; color: var(--text-secondary); }
     .search-item .info .type-badge {
       display: inline-block; margin-top: 3px;
-      background: var(--surface); border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
       color: var(--text-secondary); font-size: 10px; font-weight: 600;
       padding: 2px 7px; border-radius: 4px;
     }
+    body.light-theme .search-item .info .type-badge { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
 
     /* Grid view */
     .search-results-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: var(--border);
+      gap: 1px; background: rgba(255,255,255,0.07);
     }
+    body.light-theme .search-results-grid { background: rgba(0,0,0,0.06); }
     .search-grid-item {
       display: flex; flex-direction: column; cursor: pointer;
-      background: var(--bg-secondary); transition: background 0.15s;
+      background: transparent; transition: background 0.15s;
     }
-    .search-grid-item:hover { background: var(--surface-hover); }
+    .search-grid-item:hover { background: rgba(255,255,255,0.07); }
+    body.light-theme .search-grid-item:hover { background: rgba(0,0,0,0.04); }
     .search-grid-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
     .search-grid-info { padding: 8px 9px; }
     .search-grid-info h4 {
@@ -267,13 +341,14 @@
 
     /* Load more */
     .load-more-btn {
-      text-align: center; padding: 12px; background: var(--surface); margin: 0;
-      border-top: 1px solid var(--border); cursor: pointer; font-weight: 600;
+      text-align: center; padding: 12px; background: rgba(255,255,255,0.04); margin: 0;
+      border-top: 1px solid rgba(255,255,255,0.09); cursor: pointer; font-weight: 600;
       font-size: 13px; color: var(--cyan); border-bottom-left-radius: var(--radius);
       border-bottom-right-radius: var(--radius);
     }
-    body.light-theme .load-more-btn { background: rgba(0,0,0,0.02); }
-    .load-more-btn:hover { background: var(--surface-hover); }
+    body.light-theme .load-more-btn { background: rgba(0,0,0,0.02); border-top-color: rgba(0,0,0,0.07); }
+    .load-more-btn:hover { background: rgba(255,255,255,0.07); }
+    body.light-theme .load-more-btn:hover { background: rgba(0,0,0,0.04); }
 
     /* ============================================================
        NAV ACTIONS
@@ -644,15 +719,29 @@
     .modal-backdrop.active { opacity: 1; pointer-events: auto; }
 
     .modal-box {
-      background: var(--bg-secondary); border: 1px solid var(--glass-border);
+      background: rgba(14,18,32,0.72);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: var(--radius-lg); width: 90%; max-width: 580px;
       max-height: 87vh; overflow-y: auto;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.7); padding: 24px;
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.28),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 32px 80px rgba(0,0,0,0.7),
+        0 2px 8px rgba(0,0,0,0.3);
+      padding: 24px;
       color: var(--text-primary);
+      backdrop-filter: blur(64px) saturate(2.8) brightness(1.14) contrast(1.04);
+      -webkit-backdrop-filter: blur(64px) saturate(2.8) brightness(1.14) contrast(1.04);
       transform: translateY(16px) scale(0.97); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
     .modal-backdrop.active .modal-box { transform: translateY(0) scale(1); }
-    body.light-theme .modal-box { box-shadow: 0 24px 60px rgba(0,0,0,0.14); }
+    body.light-theme .modal-box {
+      background: rgba(241,243,252,0.65);
+      border-color: rgba(255,255,255,0.92);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.98),
+        0 32px 80px rgba(0,0,0,0.14);
+    }
     .modal-box::-webkit-scrollbar { width: 4px; }
     .modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -753,16 +842,28 @@
     ============================================================ */
     .ai-chat-panel {
       position: fixed; bottom: 96px; right: 28px; width: 370px; height: 520px;
-      background: var(--bg-secondary);
-      border: 1px solid rgba(91,91,214,0.25);
+      background: rgba(14,18,32,0.68);
+      border: 1px solid rgba(255,255,255,0.18);
       border-radius: var(--radius-lg); z-index: 899;
       display: flex; flex-direction: column;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+      backdrop-filter: blur(56px) saturate(2.4) brightness(1.1);
+      -webkit-backdrop-filter: blur(56px) saturate(2.4) brightness(1.1);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.24),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 32px 80px rgba(0,0,0,0.65),
+        0 2px 8px rgba(0,0,0,0.3);
       transform: translateY(24px) scale(0.96); opacity: 0; pointer-events: none;
       transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
       overflow: hidden;
     }
-    body.light-theme .ai-chat-panel { background: #FFFFFF; border-color: rgba(91,91,214,0.15); box-shadow: 0 32px 80px rgba(0,0,0,0.14); }
+    body.light-theme .ai-chat-panel {
+      background: rgba(241,243,252,0.62);
+      border-color: rgba(255,255,255,0.9);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.98),
+        0 32px 80px rgba(0,0,0,0.12);
+    }
     .ai-chat-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
 
     .ai-chat-header {
@@ -940,8 +1041,8 @@
       </button>
       <button class="icon-btn" onclick="openSettingsModal()" title="تنظیمات">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
       </button>
     </div>
@@ -1382,6 +1483,37 @@
           searchQueryCache[cacheKey] = { ...result, total:result.totalResults, ts:Date.now() };
           return result;
         }
+        // OMDB rejects very short queries (e.g. "it", "up", "us") with "Too many results" or
+        // "Movie not found". Fallback: hit the title-lookup endpoint (?t=) to at least surface
+        // the best-matching title(s) so the user isn't left with an empty panel.
+        if (page === 1 && query.trim().length <= 4) {
+          const fallbackResults = [];
+          // Try movie first, then series
+          for (const type of ['movie', 'series', 'episode']) {
+            const fb = await fetch(
+              `https://www.omdbapi.com/?apikey=${OMDB_KEY}&t=${encodeURIComponent(query)}&type=${type}`,
+              { signal }
+            );
+            if (fb.ok) {
+              const fd = await fb.json();
+              if (fd.Response === "True" && fd.imdbID) {
+                // Normalise to the same shape that s= returns
+                fallbackResults.push({
+                  Title:   fd.Title,
+                  Year:    fd.Year,
+                  imdbID:  fd.imdbID,
+                  Type:    fd.Type,
+                  Poster:  fd.Poster
+                });
+              }
+            }
+          }
+          if (fallbackResults.length) {
+            const result = { results: fallbackResults, totalResults: fallbackResults.length };
+            searchQueryCache[cacheKey] = { ...result, total: result.totalResults, ts: Date.now() };
+            return result;
+          }
+        }
         return { results:[], totalResults:0 };
       } catch (e) {
         if (e.name !== 'AbortError') console.error(e);
@@ -1417,7 +1549,7 @@
       clearTimeout(searchDebounceTimer);
       if (searchAbortController) searchAbortController.abort();
       const dropdown = document.getElementById("searchDropdown");
-      if (!query || query.trim().length < 2) {
+      if (!query || query.trim().length < 1) {
         dropdown.classList.remove('visible');
         currentSearchQuery = ""; currentSearchResults = []; currentSearchPage = 1;
         return;
@@ -1433,17 +1565,24 @@
         const firstPage = await performSearch(currentSearchQuery, 1, signal);
         if (signal.aborted) return;
         currentSearchResults = firstPage.results;
-        const hasMore = firstPage.totalResults > 10;
-        renderSearchDropdown(currentSearchResults, hasMore, 1, firstPage.totalResults);
-        if (hasMore && currentSearchResults.length < 30) {
-          for (let p = 2; p <= 3; p++) {
+        const totalAvailable = firstPage.totalResults;
+        const maxAutoPages = Math.min(Math.ceil(totalAvailable / 10), 5); // auto-fetch up to 5 pages (50 results)
+        const hasMore = totalAvailable > currentSearchResults.length;
+        renderSearchDropdown(currentSearchResults, hasMore, 1, totalAvailable);
+        if (totalAvailable > 10) {
+          for (let p = 2; p <= maxAutoPages; p++) {
             if (signal.aborted) break;
             const next = await performSearch(currentSearchQuery, p, signal);
             if (signal.aborted) break;
             if (next.results.length) {
               const seen  = new Set(currentSearchResults.map(r => r.imdbID));
               const fresh = next.results.filter(r => !seen.has(r.imdbID));
-              if (fresh.length) { currentSearchResults.push(...fresh); currentSearchPage = p; renderSearchDropdown(currentSearchResults, p < 3 && next.results.length === 10, p, firstPage.totalResults); }
+              if (fresh.length) {
+                currentSearchResults.push(...fresh);
+                currentSearchPage = p;
+                const stillMore = totalAvailable > currentSearchResults.length;
+                renderSearchDropdown(currentSearchResults, stillMore, p, totalAvailable);
+              }
             } else break;
           }
         }
@@ -1483,7 +1622,8 @@
       }
 
       if (hasMore) {
-        html += `<div class="load-more-btn" data-total="${totalResults}" onclick="loadMoreSearchResults(event)">بیشتر (${results.length} از ${totalResults}) ...</div>`;
+        const remaining = totalResults - results.length;
+        html += `<div class="load-more-btn" data-total="${totalResults}" onclick="loadMoreSearchResults(event)">بارگذاری ۳۰ مورد بیشتر (${results.length} از ${totalResults}) ...</div>`;
       }
       body.innerHTML = html;
     }
@@ -1492,15 +1632,23 @@
       if (event) event.stopPropagation();
       if (isLoadingMore) return;
       isLoadingMore = true;
-      const nextPage = currentSearchPage + 1;
-      const more = await performSearch(currentSearchQuery, nextPage);
-      if (more.results.length) {
+      // fetch the next 3 pages (30 more results) each time "load more" is clicked
+      const startPage = currentSearchPage + 1;
+      const endPage   = startPage + 2;
+      let totalResults = 0;
+      for (let p = startPage; p <= endPage; p++) {
+        const more = await performSearch(currentSearchQuery, p);
+        if (!more.results.length) break;
+        totalResults = more.totalResults;
         const seen  = new Set(currentSearchResults.map(r => r.imdbID));
         const fresh = more.results.filter(r => !seen.has(r.imdbID));
-        currentSearchResults.push(...fresh);
-        currentSearchPage = nextPage;
-        renderSearchDropdown(currentSearchResults, more.results.length === 10, currentSearchPage, more.totalResults);
+        if (fresh.length) {
+          currentSearchResults.push(...fresh);
+          currentSearchPage = p;
+        } else break;
       }
+      const stillMore = totalResults > currentSearchResults.length;
+      renderSearchDropdown(currentSearchResults, stillMore, currentSearchPage, totalResults);
       isLoadingMore = false;
     }
 
